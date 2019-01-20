@@ -25,42 +25,4 @@ module.exports = passport => {
       });
     })
   );
-
-  //GOOGLE TOKEN STRATEGY
-  passport.use(
-    new GoogleStrategy(
-      {
-        // options for strategy
-        callbackURL: "/auth-success",
-        clientID: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        proxy: true
-      },
-      (accessToken, refreshToken, profile, done) => {
-        // console.log("Acess Token: ", accessToken);
-        // console.log("Profile: ", profile);
-        // console.log("Refresh Token: ", refreshToken);
-        const email = profile.emails[0].value;
-        const id = profile.id;
-        const name = profile.displayName;
-        // check if user already exists
-        User.findOne({ "google.id": id }).then(user => {
-          if (user) {
-            done(null, user);
-          } else {
-            const newUser = new User({
-              method: "google",
-              google: {
-                id: id,
-                name: name,
-                email: email
-              }
-            });
-            newUser.save();
-            done(null, newUser);
-          }
-        });
-      }
-    )
-  );
 };
